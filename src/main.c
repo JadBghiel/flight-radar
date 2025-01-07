@@ -9,8 +9,8 @@
 void display_usage(void)
 {
     my_putstr("Welcome to MY_RADAR, a flight radar simulator !\n");
-    my_putstr("The program takes as input a script containing the information");
-    my_putstr("about the entities, once executed it start automatically.\n");
+    my_putstr("The program takes as input a script containing the informatio");
+    my_putstr("n about the entities, once executed it start automatically.\n");
     my_putstr("Planes move from their source to their destination,\n");
     my_putstr("If they collide with each other they crash, except if");
     my_putstr("they are within a control tower area\n");
