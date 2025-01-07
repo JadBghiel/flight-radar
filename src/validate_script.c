@@ -20,49 +20,52 @@ int is_valid_integer(const char *str)
     return 1;
 }
 
-int validate_aircraft_line(char *line)
+static int validate_token_values(char *ptr, int expected_count,
+    int non_negative_start)
 {
-    char *token;
+    char *token = my_strtok(NULL, " \t");
     int count = 0;
     int value;
 
-    token = my_strtok(line, " \t");
-    if (!token)
-        return 0;
-    if (token[0] != 'A' || token[1] != '\0')
-        return 0;
-    token = my_strtok(NULL, " \t");
-    while (token) {
+    while (token && count < expected_count) {
         if (!is_valid_integer(token)) {
             return 0;
         }
         value = my_atoi(token);
-        count++;
-        if (count >= 5 && value < 0)
+        if (count >= non_negative_start && value < 0) {
             return 0;
+        }
+        count++;
+        token = my_strtok(NULL, " \t");
     }
-    return (count == 6);
+    return count == expected_count;
+}
+
+static int validate_tokens(char *line, char type, int expected_count,
+    int non_negative_start)
+{
+    char *copy = my_strdup(line);
+    char *ptr = copy;
+    char *token = my_strtok(ptr, " \t");
+    int result;
+
+    if (!token || token[0] != type || token[1] != '\0') {
+        free(copy);
+        return 0;
+    }
+    result = validate_token_values(ptr, expected_count, non_negative_start);
+    free(copy);
+    return result;
+}
+
+int validate_aircraft_line(char *line)
+{
+    return validate_tokens(line, 'A', 6, 4);
 }
 
 int validate_tower_line(char *line)
 {
-    char *token;
-    int count = 0, value;
-
-    token = my_strtok(line, " \t");
-    if (!token || token[0] != 'T' || token[1] != '\0') {
-        return 0;
-    }
-    token = my_strtok(NULL, " \t");
-    while (token) {
-        if (!is_valid_integer(token))
-            return 0;
-        value = my_atoi(token);
-        if (count == 2 && value < 0)
-            return 0;
-        count++;
-    }
-    return count == 3;
+    return validate_tokens(line, 'T', 3, 2);
 }
 
 int validate_line(char *line)
@@ -100,6 +103,7 @@ static int read_lines_from_file(FILE *file)
             free(line);
             return 84;
         }
+        read = getline(&line, &len, file);
     }
     free(line);
     return 0;

@@ -1,18 +1,15 @@
-this version doesnt execute with the proper script it hangs for some reason,
-    maybe due to my_fgets
-
 TODO:
 - investigate \r
-- in my_fgets() 2 func have > 4 params so do a struct
 - check if the coords given in the script are within bound of the map
     (1920*1080) -> validate_script.c
 - assign the value from the script to the multiple struct (plane_t, tower_t)
 - display the sprites
 - toggalable hitbpx
+- set max frame rate and add a button to change it
 
 STEPS:
 ✓ open the window and close event
-- validate script
+✓ validate script
 - assign values from script to struct
 - create the sprites with their hitboxes, orientation etc display them
 - check for collisions

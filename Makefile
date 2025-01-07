@@ -30,10 +30,10 @@ OBJ = $(SRC:.c=.o)
 
 NAME = my_radar
 
-LDFLAGS = -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-audio -lm
+LDFLAGS = -lcsfml-graphics -lcsfml-window -lcsfml-system -lcsfml-audio -lm -g
 
 $(NAME): $(OBJ)
-	$(CC)	-o	$(NAME)	$(OBJ)	$(LDFLAGS)	-g
+	$(CC)	-o	$(NAME)	$(OBJ)	$(LDFLAGS)
 
 all: $(NAME)
 

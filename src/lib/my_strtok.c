@@ -46,7 +46,7 @@ char *my_strtok(char *str, const char *delim)
     if (str != NULL) {
         saved_str = str;
     }
-    if (saved_str == NULL) {
+    if (saved_str == NULL || *saved_str == '\0') {
         return NULL;
     }
     saved_str = skip_delimiters(saved_str, delim);

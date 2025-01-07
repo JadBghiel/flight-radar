@@ -5,6 +5,5 @@ temp/
 *.a
 settings.json
 .vscode
-temp.c
-testing.txt
-testing*.txt
+.history
+test
