@@ -32,6 +32,8 @@ void cleanup(sfRenderWindow *window, sprites_t *sprites)
 
 int main(int argc, char **argv)
 {
+    planes_t *planes = NULL;
+    tower_t *towers = NULL;
     if (argc != 2) {
         my_put_error("usage: ./my_radar <script_file>\n");
         return 84;
@@ -44,6 +46,9 @@ int main(int argc, char **argv)
         my_put_error("invalid script file\n");
         return 84;
     }
+    // rest of the things to do here, eventually have them in a function called init_program
+    extract_data_from_script(argv[1], &planes, &towers);
+
     sfRenderWindow *window = create_window();
     if (!window) {
         my_put_error("failed to create window\n");

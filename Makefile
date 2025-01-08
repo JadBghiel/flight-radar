@@ -10,6 +10,7 @@ CC = gcc
 SRC = src/main.c \
 	src/validate_script.c \
 	src/window.c \
+	src/extract_data.c \
 	src/lib/my_atoi.c \
 	src/lib/my_fgets.c \
 	src/lib/my_isdigit.c \
