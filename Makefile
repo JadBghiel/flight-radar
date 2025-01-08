@@ -10,6 +10,7 @@ CC = gcc
 SRC = src/main.c \
 	src/validate_script.c \
 	src/window.c \
+	src/cleanup.c \
 	src/extract_data.c \
 	src/lib/my_atoi.c \
 	src/lib/my_fgets.c \
@@ -26,6 +27,7 @@ SRC = src/main.c \
 	src/lib/my_strlen.c \
 	src/lib/my_strtok.c \
 	src/sprites/init_sprites.c \
+	src/sprites/planes.c \
 
 OBJ = $(SRC:.c=.o)
 

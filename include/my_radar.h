@@ -22,6 +22,8 @@ typedef struct planes_s {
     int arrival_y;
     int speed;
     int delay;
+    sfSprite *sprite;
+    sfRectangleShape *hitbox;
     struct planes_s *next;
 } planes_t;
 
@@ -51,5 +53,18 @@ int validate_script(const char *filename);
 //extract_data.c:
 void extract_data_from_script(const char *filename, planes_t **planes,
     tower_t **towers);
+
+//planes.c:
+void initialize_plane(planes_t *plane);
+void update_plane_position(planes_t *plane, float delta_time);
+void draw_planes(sfRenderWindow *window, planes_t *planes);
+
+//towers.c:
+
+
+//cleanup.c:
+void cleanup(sfRenderWindow *window, sprites_t *sprites, planes_t *planes);
+
+
 
 #endif /* MY_RADAR */

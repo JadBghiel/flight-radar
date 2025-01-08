@@ -18,22 +18,56 @@ void display_usage(void)
     my_putstr("Press 'S' to toggle visibility of entities's sprites\n");
 }
 
-void cleanup(sfRenderWindow *window, sprites_t *sprites)
+static int init_game(const char *script, planes_t **planes, tower_t **towers,
+    sfRenderWindow **window, sprites_t *sprites)
 {
-    if (sprites->background)
-        sfSprite_destroy(sprites->background);
-    if (sprites->plane_sprite)
-        sfSprite_destroy(sprites->plane_sprite);
-    if (sprites->tower_sprite)
-        sfSprite_destroy(sprites->tower_sprite);
-    if (window)
-        sfRenderWindow_destroy(window);
+    if (validate_script(script) == 84) {
+        my_put_error("invalid script file\n");
+        return 84;
+    }
+    extract_data_from_script(script, planes, towers);
+
+    *window = create_window();
+    if (!*window) {
+        my_put_error("failed to create window\n");
+        return 84;
+    }
+    setup_sprites(*window, sprites);
+    
+    planes_t *current_plane = *planes;
+    while (current_plane) {
+        initialize_plane(current_plane);
+        current_plane = current_plane->next;
+    }
+
+    sfClock *clock = sfClock_create();
+
+    while (sfRenderWindow_isOpen(*window)) {
+        handle_events(*window);
+        
+        float delta_time = sfTime_asSeconds(sfClock_restart(clock));
+
+        current_plane = *planes;
+        while (current_plane) {
+            update_plane_position(current_plane, delta_time);
+            current_plane = current_plane->next;
+        }
+
+        draw_sprites(*window, sprites->background);
+        draw_planes(*window, *planes);
+    }
+
+    sfClock_destroy(clock);
+    return 0;
 }
 
 int main(int argc, char **argv)
 {
     planes_t *planes = NULL;
     tower_t *towers = NULL;
+    sfRenderWindow *window = NULL;
+    sprites_t sprites = {0};
+
     if (argc != 2) {
         my_put_error("usage: ./my_radar <script_file>\n");
         return 84;
@@ -42,24 +76,9 @@ int main(int argc, char **argv)
         display_usage();
         return 0;
     }
-    if (validate_script(argv[1]) == 84) {
-        my_put_error("invalid script file\n");
+    if (init_game(argv[1], &planes, &towers, &window, &sprites) == 84)
         return 84;
-    }
-    // rest of the things to do here, eventually have them in a function called init_program
-    extract_data_from_script(argv[1], &planes, &towers);
 
-    sfRenderWindow *window = create_window();
-    if (!window) {
-        my_put_error("failed to create window\n");
-        return 84;
-    }
-    sprites_t sprites = {0};
-    setup_sprites(window, &sprites);
-    while (sfRenderWindow_isOpen(window)) {
-        handle_events(window);
-        draw_sprites(window, sprites.background);
-    }
-    cleanup(window, &sprites);
+    cleanup(window, &sprites, planes);
     return 0;
 }

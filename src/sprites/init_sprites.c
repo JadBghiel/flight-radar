@@ -25,11 +25,24 @@ void setup_sprites(sfRenderWindow *window, sprites_t *sprites)
     sprites->background = create_sprite("rsrc/world_map.jpg");
     sprites->plane_sprite = create_sprite("rsrc/plane.png");
     sprites->tower_sprite = create_sprite("rsrc/tower.png");
+    if (!sprites->background || !sprites->plane_sprite ||
+        !sprites->tower_sprite) {
+        my_put_error("failed to load one or more textures\n");
+    }
 }
 
 void draw_sprites(sfRenderWindow *window, sfSprite *background)
 {
     sfRenderWindow_clear(window, sfBlack);
     sfRenderWindow_drawSprite(window, background, NULL);
+}
+
+void draw_planes(sfRenderWindow *window, planes_t *planes)
+{
+    while (planes) {
+        sfRenderWindow_drawSprite(window, planes->sprite, NULL);
+        sfRenderWindow_drawRectangleShape(window, planes->hitbox, NULL);
+        planes = planes->next;
+    }
     sfRenderWindow_display(window);
 }
