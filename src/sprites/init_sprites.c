@@ -38,20 +38,30 @@ void draw_sprites(sfRenderWindow *window, sfSprite *background)
     sfRenderWindow_drawSprite(window, background, NULL);
 }
 
-void draw_planes(sfRenderWindow *window, planes_t *planes)
+void draw_planes(sfRenderWindow *window, planes_t *planes,
+    int hitboxes_visible)
 {
-    while (planes) {
-        sfRenderWindow_drawSprite(window, planes->sprite, NULL);
-        sfRenderWindow_drawRectangleShape(window, planes->hitbox, NULL);
-        planes = planes->next;
+    planes_t *current_plane = planes;
+
+    while (current_plane) {
+        sfRenderWindow_drawSprite(window, current_plane->sprite, NULL);
+        if (hitboxes_visible) {
+            sfRenderWindow_drawRectangleShape(window, current_plane->hitbox,
+                NULL);
+        }
+        current_plane = current_plane->next;
     }
 }
 
-void draw_towers(sfRenderWindow *window, tower_t *towers)
+void draw_towers(sfRenderWindow *window, tower_t *towers, int hitboxes_visible)
 {
-    while (towers) {
-        sfRenderWindow_drawSprite(window, towers->sprite, NULL);
-        sfRenderWindow_drawCircleShape(window, towers->area, NULL);
-        towers = towers->next;
+    tower_t *current_tower = towers;
+
+    while (current_tower) {
+        sfRenderWindow_drawSprite(window, current_tower->sprite, NULL);
+        if (hitboxes_visible) {
+            sfRenderWindow_drawCircleShape(window, current_tower->area, NULL);
+        }
+        current_tower = current_tower->next;
     }
 }

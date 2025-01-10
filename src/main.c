@@ -72,20 +72,22 @@ static void start_game_loop(sfRenderWindow *window, sprites_t *sprites,
     planes_t *planes, tower_t *towers)
 {
     sfClock *clock = sfClock_create();
+    int hitboxes_visible = 1;
     float delta_time;
     planes_t *current_plane;
 
     while (sfRenderWindow_isOpen(window)) {
-        handle_events(window);
+        handle_events(window, &hitboxes_visible);
         delta_time = sfTime_asSeconds(sfClock_restart(clock));
         current_plane = planes;
         while (current_plane) {
             update_plane_position(current_plane, delta_time);
             current_plane = current_plane->next;
         }
+        sfRenderWindow_clear(window, sfBlack);
         draw_sprites(window, sprites->background);
-        draw_planes(window, planes);
-        draw_towers(window, towers);
+        draw_planes(window, planes, hitboxes_visible);
+        draw_towers(window, towers, hitboxes_visible);
         sfRenderWindow_display(window);
     }
     sfClock_destroy(clock);

@@ -17,12 +17,21 @@ sfRenderWindow *create_window(void)
     return window;
 }
 
-void handle_events(sfRenderWindow *window)
+static void handle_event_logic(sfEvent event, sfRenderWindow *window,
+    int *hitboxes_visible)
+{
+    if (event.type == sfEvtClosed) {
+        sfRenderWindow_close(window);
+    } else if (event.type == sfEvtKeyPressed && event.key.code == sfKeyL) {
+        *hitboxes_visible = !(*hitboxes_visible);
+    }
+}
+
+void handle_events(sfRenderWindow *window, int *hitboxes_visible)
 {
     sfEvent event;
 
     while (sfRenderWindow_pollEvent(window, &event)) {
-        if (event.type == sfEvtClosed)
-            sfRenderWindow_close(window);
+        handle_event_logic(event, window, hitboxes_visible);
     }
 }
