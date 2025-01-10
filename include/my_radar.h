@@ -31,6 +31,8 @@ typedef struct tower_s {
     int pos_x;
     int pos_y;
     int radius;
+    sfSprite *sprite;
+    sfCircleShape *area;
     struct tower_s *next;
 } tower_t;
 
@@ -40,8 +42,10 @@ void handle_events(sfRenderWindow *window);
 
 //init_sprites:
 sfSprite* create_sprite(const char *texture_file);
-void setup_sprites(sfRenderWindow *window, sprites_t *sprites);
+int setup_sprites(sfRenderWindow *window, sprites_t *sprites);
 void draw_sprites(sfRenderWindow *window, sfSprite *background);
+void draw_planes(sfRenderWindow *window, planes_t *planes);
+void draw_towers(sfRenderWindow *window, tower_t *towers);
 
 //validate_script.c:
 int is_valid_integer(const char *str);
@@ -57,14 +61,12 @@ void extract_data_from_script(const char *filename, planes_t **planes,
 //planes.c:
 void initialize_plane(planes_t *plane);
 void update_plane_position(planes_t *plane, float delta_time);
-void draw_planes(sfRenderWindow *window, planes_t *planes);
 
 //towers.c:
-
+void initialize_tower(tower_t *tower);
 
 //cleanup.c:
-void cleanup(sfRenderWindow *window, sprites_t *sprites, planes_t *planes);
-
-
+void cleanup(sfRenderWindow *window, sprites_t *sprites, planes_t *planes,
+    tower_t *towers);
 
 #endif /* MY_RADAR */

@@ -13,7 +13,6 @@ SRC = src/main.c \
 	src/cleanup.c \
 	src/extract_data.c \
 	src/lib/my_atoi.c \
-	src/lib/my_fgets.c \
 	src/lib/my_isdigit.c \
 	src/lib/my_isspace.c \
 	src/lib/my_memcpy.c \
@@ -28,6 +27,7 @@ SRC = src/main.c \
 	src/lib/my_strtok.c \
 	src/sprites/init_sprites.c \
 	src/sprites/planes.c \
+	src/sprites/towers.c \
 
 OBJ = $(SRC:.c=.o)
 

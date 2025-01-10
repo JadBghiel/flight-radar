@@ -12,7 +12,7 @@ static sfSprite *create_plane_sprite(void)
     sfSprite *sprite = sfSprite_create();
 
     if (!texture || !sprite)
-        return NULL;
+        my_put_error("failed to load plane texture\n");
     sfSprite_setTexture(sprite, texture, sfTrue);
     return sprite;
 }
@@ -22,7 +22,7 @@ static sfRectangleShape *create_hitbox(void)
     sfRectangleShape *hitbox = sfRectangleShape_create();
 
     if (!hitbox)
-        return NULL;
+        my_put_error("failed to load hitbox\n");
     sfRectangleShape_setSize(hitbox, (sfVector2f){20, 20});
     sfRectangleShape_setFillColor(hitbox, sfTransparent);
     sfRectangleShape_setOutlineColor(hitbox, sfRed);
@@ -42,32 +42,44 @@ void initialize_plane(planes_t *plane)
         plane->departure_y});
     sfRectangleShape_setPosition(plane->hitbox, (sfVector2f){
             plane->departure_x, plane->departure_y});
-    printf("plane initialized at pos (%d, %d)\n", plane->departure_x,
-        plane->departure_y);
+}
+
+static sfVector2f calculate_new_position(sfVector2f pos, sfVector2f direction,
+    float speed, float delta_time)
+{
+    pos.x += direction.x * speed * delta_time;
+    pos.y += direction.y * speed * delta_time;
+    return pos;
+}
+
+static void calculate_direction_and_distance(sfVector2f pos,
+    sfVector2f arrival, sfVector2f *direction, float *total_distance)
+{
+    direction->x = arrival.x - pos.x;
+    direction->y = arrival.y - pos.y;
+    *total_distance = sqrtf(direction->x * direction->x + direction->y *
+        direction->y);
 }
 
 void update_plane_position(planes_t *plane, float delta_time)
 {
     static float elapsed_time = 0;
     sfVector2f pos;
-    float total_distance;
     sfVector2f direction;
+    float total_distance;
 
     if (elapsed_time < plane->delay) {
         elapsed_time += delta_time;
         return;
     }
     pos = sfSprite_getPosition(plane->sprite);
-    direction.x = plane->arrival_x - pos.x;
-    direction.y = plane->arrival_y - pos.y;
-    total_distance = sqrtf(direction.x * direction.x + direction.y *
-        direction.y);
+    calculate_direction_and_distance(pos, (sfVector2f){plane->arrival_x,
+        plane->arrival_y}, &direction, &total_distance);
     if (total_distance < 1)
         return;
     direction.x /= total_distance;
     direction.y /= total_distance;
-    pos.x += direction.x * plane->speed * delta_time;
-    pos.y += direction.y * plane->speed * delta_time;
+    pos = calculate_new_position(pos, direction, plane->speed, delta_time);
     sfSprite_setPosition(plane->sprite, pos);
     sfRectangleShape_setPosition(plane->hitbox, pos);
 }

@@ -18,47 +18,77 @@ void display_usage(void)
     my_putstr("Press 'S' to toggle visibility of entities's sprites\n");
 }
 
-static int init_game(const char *script, planes_t **planes, tower_t **towers,
-    sfRenderWindow **window, sprites_t *sprites)
+static int initialize_window_and_sprites(sfRenderWindow **window,
+    sprites_t *sprites)
+{
+    *window = create_window();
+    if (!*window) {
+        my_put_error("failed to create window\n");
+        return 84;
+    }
+    if (setup_sprites(*window, sprites)) {
+        return 84;
+    }
+    return 0;
+}
+
+static void initialize_planes(planes_t *planes)
+{
+    planes_t *current_plane = planes;
+
+    while (current_plane) {
+        initialize_plane(current_plane);
+        current_plane = current_plane->next;
+    }
+}
+
+static void initialize_towers(tower_t *towers)
+{
+    tower_t *current_tower = towers;
+
+    while (current_tower) {
+        initialize_tower(current_tower);
+        current_tower = current_tower->next;
+    }
+}
+
+static int initialize_game_resources(const char *script, planes_t **planes,
+    tower_t **towers, sfRenderWindow **window, sprites_t *sprites)
 {
     if (validate_script(script) == 84) {
         my_put_error("invalid script file\n");
         return 84;
     }
     extract_data_from_script(script, planes, towers);
-
-    *window = create_window();
-    if (!*window) {
-        my_put_error("failed to create window\n");
+    if (initialize_window_and_sprites(window, sprites) == 84) {
         return 84;
     }
-    setup_sprites(*window, sprites);
-    
-    planes_t *current_plane = *planes;
-    while (current_plane) {
-        initialize_plane(current_plane);
-        current_plane = current_plane->next;
-    }
+    initialize_planes(*planes);
+    initialize_towers(*towers);
+    return 0;
+}
 
+static void start_game_loop(sfRenderWindow *window, sprites_t *sprites,
+    planes_t *planes, tower_t *towers)
+{
     sfClock *clock = sfClock_create();
+    float delta_time;
+    planes_t *current_plane;
 
-    while (sfRenderWindow_isOpen(*window)) {
-        handle_events(*window);
-        
-        float delta_time = sfTime_asSeconds(sfClock_restart(clock));
-
-        current_plane = *planes;
+    while (sfRenderWindow_isOpen(window)) {
+        handle_events(window);
+        delta_time = sfTime_asSeconds(sfClock_restart(clock));
+        current_plane = planes;
         while (current_plane) {
             update_plane_position(current_plane, delta_time);
             current_plane = current_plane->next;
         }
-
-        draw_sprites(*window, sprites->background);
-        draw_planes(*window, *planes);
+        draw_sprites(window, sprites->background);
+        draw_planes(window, planes);
+        draw_towers(window, towers);
+        sfRenderWindow_display(window);
     }
-
     sfClock_destroy(clock);
-    return 0;
 }
 
 int main(int argc, char **argv)
@@ -76,9 +106,10 @@ int main(int argc, char **argv)
         display_usage();
         return 0;
     }
-    if (init_game(argv[1], &planes, &towers, &window, &sprites) == 84)
+    if (initialize_game_resources(argv[1], &planes, &towers, &window,
+        &sprites) == 84)
         return 84;
-
-    cleanup(window, &sprites, planes);
+    start_game_loop(window, &sprites, planes, towers);
+    cleanup(window, &sprites, planes, towers);
     return 0;
 }
