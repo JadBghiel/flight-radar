@@ -38,16 +38,17 @@ typedef struct tower_s {
 
 //window.c:
 sfRenderWindow *create_window(void);
-void handle_events(sfRenderWindow *window, int *hitboxes_visible);
+void handle_events(sfRenderWindow *window, int *hitboxes_visible,
+    int *sprites_visible);
 
 //init_sprites:
 sfSprite* create_sprite(const char *texture_file);
 int setup_sprites(sfRenderWindow *window, sprites_t *sprites);
 void draw_sprites(sfRenderWindow *window, sfSprite *background);
 void draw_planes(sfRenderWindow *window, planes_t *planes,
-    int hitboxes_visible);
-void draw_towers(sfRenderWindow *window, tower_t *towers,
-    int hitboxes_visible);
+    int hitboxes_visible, int sprites_visible);
+void draw_towers(sfRenderWindow *window, tower_t *towers, int hitboxes_visible,
+    int sprites_visible);
 
 //validate_script.c:
 int is_valid_integer(const char *str);

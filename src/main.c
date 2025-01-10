@@ -68,27 +68,41 @@ static int initialize_game_resources(const char *script, planes_t **planes,
     return 0;
 }
 
+static void update_planes(planes_t *planes, float delta_time)
+{
+    planes_t *current_plane = planes;
+
+    while (current_plane) {
+        update_plane_position(current_plane, delta_time);
+        current_plane = current_plane->next;
+    }
+}
+
+static void draw_game_elements(sfRenderWindow *window, sprites_t *sprites,
+    planes_t *planes, tower_t *towers, int hitboxes_visible,
+            int sprites_visible)
+{
+    sfRenderWindow_clear(window, sfBlack);
+    draw_sprites(window, sprites->background);
+    draw_planes(window, planes, hitboxes_visible, sprites_visible);
+    draw_towers(window, towers, hitboxes_visible, sprites_visible);
+    sfRenderWindow_display(window);
+}
+
 static void start_game_loop(sfRenderWindow *window, sprites_t *sprites,
     planes_t *planes, tower_t *towers)
 {
     sfClock *clock = sfClock_create();
     int hitboxes_visible = 1;
+    int sprites_visible = 1;
     float delta_time;
-    planes_t *current_plane;
 
     while (sfRenderWindow_isOpen(window)) {
-        handle_events(window, &hitboxes_visible);
+        handle_events(window, &hitboxes_visible, &sprites_visible);
         delta_time = sfTime_asSeconds(sfClock_restart(clock));
-        current_plane = planes;
-        while (current_plane) {
-            update_plane_position(current_plane, delta_time);
-            current_plane = current_plane->next;
-        }
-        sfRenderWindow_clear(window, sfBlack);
-        draw_sprites(window, sprites->background);
-        draw_planes(window, planes, hitboxes_visible);
-        draw_towers(window, towers, hitboxes_visible);
-        sfRenderWindow_display(window);
+        update_planes(planes, delta_time);
+        draw_game_elements(window, sprites, planes, towers, hitboxes_visible,
+            sprites_visible);
     }
     sfClock_destroy(clock);
 }
